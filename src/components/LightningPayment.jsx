@@ -133,7 +133,6 @@ export const LightningPaymentModal = ({ invoice, onClose, onPaymentSuccess }) =>
               </div>
               
               <div className="flex justify-center mb-4">
-                {/* QR code for the payment */}
                 <div className="bg-white p-3 rounded-lg">
                   <QRCodeSVG
                     value={invoice.payment_request || ''}

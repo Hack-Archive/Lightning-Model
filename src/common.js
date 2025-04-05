@@ -1,5 +1,4 @@
 import { Coins, Zap } from 'lucide-react';
-
 export const llmModels = [
   { name: 'Gemini 1.5 Flash', description: 'Google\'s most capable model' },
 ];
@@ -32,3 +31,15 @@ export const pricingPlans = [
     type: 'request',
   },
 ];
+
+export const formatBtc = (btc, decimals = 8) => {
+  return `₿${btc.toFixed(decimals)}`;
+};
+
+export const formatSats = (sats) => {
+  return `${sats.toLocaleString()} sats`;
+};
+
+export const tokensToBtc = (tokens, ratePerToken = 0.0000001) => {
+  return tokens * ratePerToken;
+};
