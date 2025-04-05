@@ -4,7 +4,6 @@ import { ArrowLeft, Bot } from 'lucide-react';
 const Background = ({ children }) => {
   return (
     <div className="min-h-screen bg-[#F5F5F5] text-gray-800 relative overflow-hidden">
-      {/* Light background with subtle yellow accents */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-yellow-300/20 blur-3xl"></div>
         <div className="absolute top-1/3 -left-24 w-72 h-72 rounded-full bg-yellow-400/20 blur-3xl"></div>
@@ -52,3 +51,22 @@ const PageHeader = ({
       </div>
     );
   };
+
+  const ProgressBar = ({ label, current, max, unit }) => (
+    <div className="mb-2 p-2 rounded-lg border border-gray-200 bg-white shadow-sm">
+      <div className="flex justify-between mb-1">
+        <span className="text-xs font-medium text-gray-700">{label}</span>
+        <span className="text-xs font-medium text-gray-600">
+          {current.toLocaleString()} / {max.toLocaleString()} {unit}
+        </span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-1.5">
+        <div
+          className="bg-yellow-400 h-1.5 rounded-full transition-all duration-300"
+          style={{ width: `${(current / max) * 100}%` }}
+        />
+      </div>
+    </div>
+  );
+  
+  export { Background, PageHeader, ProgressBar };
