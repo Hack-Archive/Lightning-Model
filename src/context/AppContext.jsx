@@ -15,10 +15,17 @@ const AppContext = createContext({
   setPlanType: () => {},
 });
 
+/**
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ */
 export const AppProvider = ({ children }) => {
   const [selectedModel, setSelectedModel] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [totalTokens, setTotalTokens] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [totalCalls, setTotalCalls] = useState(0);
+  const [planType, setPlanType] = useState(null);
 
   const selectModel = (modelName) => {
     setSelectedModel(modelName);
@@ -27,27 +34,45 @@ export const AppProvider = ({ children }) => {
   const resetChat = () => {
     setSelectedModel(null);
     setMessages([]);
-    setTotalTokens(0);
+    setTotalCalls(0);
+    setPlanType(null);
   };
 
-  const sendMessage = (content) => {
+  const clearError = () => {
+    setError(null);
+  };
+
+  const sendMessage = async (content) => {
     if (!content.trim()) return;
 
-    const userTokens = Math.floor(content.length * 1.3);
-    const assistantTokens = Math.floor(userTokens * 1.5);
+    try {
+      const userMessage = { role: 'user', content };
+      
+      setMessages(prevMessages => [...prevMessages, userMessage]);
+      setIsLoading(true);
+      setError(null);
 
-    const newMessages = [
-      ...messages,
-      { role: 'user', content, tokens: userTokens },
-      { 
+      const messageHistory = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content,
+      }));
+
+      const response = await geminiService.sendMessage(content, messageHistory);
+
+      const assistantMessage = { 
         role: 'assistant', 
-        content: `This is a simulated response from ${selectedModel}. In a real implementation, this would be the actual response from the API.`,
-        tokens: assistantTokens
-      }
-    ];
+        content: response.content
+      };
 
-    setMessages(newMessages);
-    setTotalTokens(prev => prev + userTokens + assistantTokens);
+      setMessages(prevMessages => [...prevMessages, assistantMessage]);
+      
+      setTotalCalls(prev => prev + 1);
+    } catch (err) {
+      console.error('Error sending message:', err);
+      setError('Failed to get response from Gemini. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const value = {
@@ -55,8 +80,13 @@ export const AppProvider = ({ children }) => {
     selectModel,
     messages,
     sendMessage,
-    totalTokens,
+    isLoading,
     resetChat,
+    error,
+    clearError,
+    totalCalls,
+    planType,
+    setPlanType,
   };
 
   return (
@@ -66,7 +96,6 @@ export const AppProvider = ({ children }) => {
   );
 };
 
-// Custom hook for using app context
 export const useApp = () => useContext(AppContext);
 
-export default AppContext;  
+export default AppContext;
