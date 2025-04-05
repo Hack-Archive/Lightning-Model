@@ -1,18 +1,25 @@
 import React, { useState } from 'react';
-import { Send, Bot, User } from 'lucide-react';
+import { Send, Bot, User, Loader2 } from 'lucide-react';
+import ChatMarkdown from './ChatMarkdown.jsx';
 
-const ChatInput = ({ onSendMessage }) => {
+/**
+ * @param {Object} props
+ * @param {(message: string) => void} props.onSendMessage
+ * @param {boolean} [props.isDisabled]
+ */
+const ChatInput = ({ onSendMessage, isDisabled = false }) => {
   const [input, setInput] = useState('');
 
   const handleSubmit = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isDisabled) return;
     
     onSendMessage(input);
     setInput('');
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       handleSubmit();
     }
   };
@@ -25,12 +32,20 @@ const ChatInput = ({ onSendMessage }) => {
         onChange={(e) => setInput(e.target.value)}
         onKeyPress={handleKeyPress}
         placeholder="Type your message..."
-        className="w-full px-4 py-3 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors border border-gray-300 text-gray-800 shadow-sm"
+        disabled={isDisabled}
+        className={`w-full px-4 py-3 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors border border-gray-300 text-gray-800 shadow-sm ${
+          isDisabled ? 'opacity-70 cursor-not-allowed' : ''
+        }`}
       />
       
       <button
         onClick={handleSubmit}
-        className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 hover:bg-yellow-500 bg-yellow-400 rounded-full transition-colors"
+        disabled={isDisabled || !input.trim()}
+        className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 transition-colors rounded-full ${
+          isDisabled || !input.trim()
+            ? 'bg-gray-300 cursor-not-allowed'
+            : 'hover:bg-yellow-500 bg-yellow-400'
+        }`}
       >
         <Send className="w-4 h-4 text-gray-800" />
       </button>
