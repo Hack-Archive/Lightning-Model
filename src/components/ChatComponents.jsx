@@ -108,3 +108,42 @@ export const ChatInput = ({ onSendMessage, isDisabled = false }) => {
   );
 };
 
+export const ChatMessage = ({ message }) => {
+  const { role, content } = message;
+
+  return (
+    <div
+      className={`flex items-start space-x-2 ${
+        role === 'user' ? 'justify-end' : ''
+      }`}
+    >
+      {role === 'assistant' && (
+        <Bot className="w-6 h-6 p-1 flex-shrink-0 text-gray-700 bg-yellow-100 rounded-full border border-yellow-300" />
+      )}
+      
+      <div
+        className={`flex flex-col max-w-[70%] ${
+          role === 'user' ? 'items-end' : ''
+        }`}
+      >
+        <div
+          className={`rounded-lg py-2 px-3 border ${
+            role === 'user'
+              ? 'bg-yellow-400 text-gray-800 border-yellow-500'
+              : 'bg-white border-gray-200 text-gray-800'
+          }`}
+        >
+          {role === 'assistant' ? (
+            <ChatMarkdown content={content} />
+          ) : (
+            content
+          )}
+        </div>
+      </div>
+      
+      {role === 'user' && (
+        <User className="w-6 h-6 p-1 flex-shrink-0 text-gray-700 bg-yellow-400 rounded-full border border-yellow-500" />
+      )}
+    </div>
+  );
+};

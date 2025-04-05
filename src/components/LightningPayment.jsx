@@ -16,3 +16,27 @@ export const LightningPaymentModal = ({ invoice, onClose, onPaymentSuccess }) =>
           console.error('Failed to copy: ', err);
         });
     };
+
+    useEffect(() => {
+        if (!invoice || !invoice.r_hash) return;
+    
+        const paymentHash = invoice.r_hash_str || invoice.r_hash;
+        
+        const checkPayment = async () => {
+          try {
+            const isPaid = await checkInvoiceStatus(paymentHash);
+            
+            if (isPaid) {
+              setPaymentStatus('success');
+              if (onPaymentSuccess) {
+                onPaymentSuccess();
+              }
+              return true; 
+            }
+            return false; 
+          } catch (err) {
+            setError('Error checking payment status');
+            console.error(err);
+            return true; 
+          }
+        };    

@@ -49,3 +49,28 @@ export const TokenLimitConfig = ({ onSubmit, onBack }) => {
         setIsSubmitting(false);
       }
     };
+
+    const handlePaymentSuccess = async () => {
+        try {
+          console.log("Payment received, configuring session with limit:", tokenLimit);
+          setDebugInfo("Payment successful, configuring session...");
+    
+          await onSubmit(tokenLimit);
+          
+          setDebugInfo("Session configured successfully");
+    
+          setTimeout(() => {
+            setShowPaymentModal(false);
+            resetPayment();
+          }, 2000);
+        } catch (err) {
+          setError('Payment was received but failed to create session. Please contact support.');
+          setDebugInfo("Session config error: " + JSON.stringify(err, Object.getOwnPropertyNames(err)));
+          console.error('Error after payment:', err);
+        }
+      };
+      
+      const handleClosePaymentModal = () => {
+        setShowPaymentModal(false);
+        resetPayment();
+      };

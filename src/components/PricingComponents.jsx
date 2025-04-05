@@ -36,3 +36,30 @@ export const PricingGrid = ({ onModelSelect, onPlanSelect }) => {
       </div>
     );
   };
+
+  export const PlanCard = ({ plan, onModelSelect, onPlanSelect }) => {
+    const { name, price, unit, features, icon: Icon, type } = plan;
+    const getPlanFeatures = () => {
+      if (name === 'Pay Per Token') {
+        return [
+          'Pay only for what you use',
+          'No monthly commitments',
+          'Token Usage tracking',
+          'Volume discounts available'
+        ];
+      } else if (name === 'Pay Per Request') {
+        return [
+          'Simple pricing model',
+          'Unlimited tokens per request',
+          'API Calls tracking',
+          'Bulk pricing available'
+        ];
+      }
+      return features;
+    };
+    
+    const handleGetStarted = () => {
+      const defaultModel = llmModels[0].name;
+      onModelSelect(defaultModel);
+      onPlanSelect(type);
+    };  
