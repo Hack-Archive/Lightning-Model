@@ -1,87 +1,188 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { Background } from './components/UIComponents.jsx';
-import { ChatPage, PricingPage, RequestLimitPage, TokenLimitPage } from './pages/Pages.jsx';
-import { apiService, RateLimitError } from './services.js';
-import { PaymentProvider } from './context/PaymentContext';
+import axios from 'axios';
 
-const AppContext = createContext({
-  selectedModel: null,
-  selectModel: () => {},
-  messages: [],
-  sendMessage: () => Promise.resolve(),
-  isLoading: false,
-  resetChat: () => Promise.resolve(),
-  error: null,
-  clearError: () => {},
-  totalCalls: 0,
-  planType: null,
-  setPlanType: () => {},
-  sessionStatus: null,
-  requestsRemaining: null,
-  configureRequestLimit: async () => {},
-  configureTokenLimit: async () => {},
-  limitConfigured: false,
-  setLimitConfigured: () => {},
-  rateLimitInfo: null,
-  tokensRemaining: null,
-  tokenUsage: null,
+const API_URL = 'http://localhost:8000/api/v1';
+
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// eslint-disable-next-line react-refresh/only-export-components
-export const useApp = () => useContext(AppContext);
+let sessionToken = localStorage.getItem('sessionToken') || null;
 
-const AppProvider = ({ children }) => {
-  const [selectedModel, setSelectedModel] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [totalCalls, setTotalCalls] = useState(0);
-  const [planType, setPlanType] = useState(null);
-  const [sessionStatus, setSessionStatus] = useState(null);
-  const [requestsRemaining, setRequestsRemaining] = useState(null);
-  const [tokensRemaining, setTokensRemaining] = useState(null);
-  const [tokenUsage, setTokenUsage] = useState(null);
-  const [limitConfigured, setLimitConfigured] = useState(false);
-  const [rateLimitInfo, setRateLimitInfo] = useState(null);
+if (sessionToken) {
+  api.defaults.headers.common['X-Session-Token'] = sessionToken;
+}
 
-  useEffect(() => {
-    const checkExistingSession = async () => {
-      try {
-        if (apiService.isSessionActive()) {
-          console.log("Found existing session, restoring state...");
+export class RateLimitError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'RateLimitError';
+  }
+}
 
-          const status = await apiService.getSessionStatus();
-          console.log("Session status:", status);
+export const apiService = {
+  isSessionActive() {
+    return !!sessionToken;
+  },
 
-          setSessionStatus(status);
-          setPlanType(status.plan_type);
-          setLimitConfigured(true);
+  async createSession(planType, totalRequestsLimit, totalTokenLimit) {
+    try {
+      console.log(`Creating session with planType: ${planType}, requestLimit: ${totalRequestsLimit}, tokenLimit: ${totalTokenLimit}`);
+      const response = await api.post('/sessions/create', {
+        plan_type: planType,
+        total_requests_limit: totalRequestsLimit || null,
+        total_token_limit: totalTokenLimit || null,
+      });
 
-          if (status.plan_type === 'request' && status.total_requests_limit) {
-            setRequestsRemaining(status.total_requests_limit - status.request_count);
-          } else if (status.plan_type === 'token' && status.total_token_limit) {
-            setTokensRemaining(status.total_token_limit - status.token_count);
-          }
+      sessionToken = response.data.session_token;
+      console.log(`Session created with token: ${sessionToken}`);
 
-          try {
-            const history = await apiService.getChatHistory();
-            if (history && history.length > 0) {
-              setMessages(history.map(msg => ({
-                role: msg.role,
-                content: msg.content
-              })));
-            }
-          } catch (historyErr) {
-            console.warn("Could not fetch message history:", historyErr);
-          }
-        }
-      } catch (err) {
-        console.warn("Failed to restore session:", err);
+      if (sessionToken) {
+        api.defaults.headers.common['X-Session-Token'] = sessionToken;
+
+        localStorage.setItem('sessionToken', sessionToken);
       }
-    };
-    
-    checkExistingSession();
 
-    return () => {
-    };
-  }, []);
+      return sessionToken || '';
+    } catch (error) {
+      console.error('Error creating session:', error);
+      throw error;
+    }
+  },
+
+  async updateSessionConfig(config) {
+    if (!sessionToken) {
+      throw new Error('No active session');
+    }
+    
+    try {
+      await api.put('/sessions/config', config);
+    } catch (error) {
+      console.error('Error updating session config:', error);
+      throw error;
+    }
+  },
+
+  async updateTokenConfig(totalTokenLimit) {
+    if (!sessionToken) {
+      throw new Error('No active session');
+    }
+    
+    try {
+      console.log(`Updating token config with limit: ${totalTokenLimit}`);
+      const response = await api.put('/sessions/token-config', {
+        total_token_limit: totalTokenLimit
+      });
+      console.log('Token config update response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error updating token config:', error);
+
+      if (axios.isAxiosError(error)) {
+        const axiosError = error;
+        const message = axiosError.response?.data?.detail || 'Unknown error occurred';
+        throw new Error(`Failed to update token config: ${message}`);
+      } else {
+        throw new Error(`Failed to update token config: ${error.message || 'Unknown error'}`);
+      }
+    }
+  },
+
+  async getSessionStatus() {
+    if (!sessionToken) {
+      throw new Error('No active session');
+    }
+    
+    try {
+      const response = await api.get('/sessions/status');
+      return response.data;
+    } catch (error) {
+      console.error('Error getting session status:', error);
+
+      if (axios.isAxiosError(error) && error.response?.status === 401) {
+        sessionToken = null;
+        localStorage.removeItem('sessionToken');
+        delete api.defaults.headers.common['X-Session-Token'];
+      }
+      
+      throw error;
+    }
+  },
+
+  async terminateSession() {
+    if (!sessionToken) {
+      return;
+    }
+    
+    try {
+      await api.post('/sessions/terminate');
+      sessionToken = null;
+      localStorage.removeItem('sessionToken');
+      
+      if ('X-Session-Token' in api.defaults.headers.common) {
+        delete api.defaults.headers.common['X-Session-Token'];
+      }
+    } catch (error) {
+      console.error('Error terminating session:', error);
+      throw error;
+    }
+  },
+
+  async sendMessage(message, chatHistory = []) {
+    if (!sessionToken) {
+      throw new Error('No active session');
+    }
+    
+    try {
+      const response = await api.post('/chat/message', {
+        message,
+        history: chatHistory,
+      });
+      
+      return {
+        content: response.data.content,
+        latencyMs: response.data.latency_ms,
+        requestsRemaining: response.data.requests_remaining,
+        tokensRemaining: response.data.tokens_remaining,
+        tokenUsage: response.data.token_usage,
+        sessionActive: response.data.session_active,
+      };
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const axiosError = error;
+
+        if (axiosError.response?.status === 401) {
+          sessionToken = null;
+          localStorage.removeItem('sessionToken');
+          delete api.defaults.headers.common['X-Session-Token'];
+          throw new Error('Session expired or invalid');
+        }
+
+        if (axiosError.response?.status === 429) {
+          const errorMessage = axiosError.response.data?.detail || 'Rate limit exceeded';
+          throw new RateLimitError(errorMessage);
+        }
+      }
+      console.error('Error sending message:', error);
+      throw error;
+    }
+  },
+
+  async getChatHistory() {
+    if (!sessionToken) {
+      throw new Error('No active session');
+    }
+    
+    try {
+      const response = await api.get('/chat/history');
+      return response.data;
+    } catch (error) {
+      console.error('Error getting chat history:', error);
+      throw error;
+    }
+  }
+};
+
+export default apiService;
