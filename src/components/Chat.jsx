@@ -134,4 +134,51 @@ const ErrorMessage = ({ message, onRetry }) => (
   </div>
 );
 
+/**
+ * @param {Object} props
+ * @param {Array} props.messages
+ * @param {(message: string) => void} props.onSendMessage
+ * @param {boolean} [props.isLoading]
+ * @param {string|null} [props.error]
+ */
+const ChatWindow = ({ 
+  messages, 
+  onSendMessage, 
+  isLoading = false,
+  error = null 
+}) => {
+  const handleRetry = () => {
+    if (messages.length > 0) {
+      const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+      if (lastUserMessage) {
+        onSendMessage(lastUserMessage.content);
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full rounded-lg border border-gray-300 bg-white/80 p-4 shadow-lg">
+      <div className="flex-1 overflow-auto space-y-3 mb-3 pr-2 custom-scrollbar">
+        {messages.length > 0 ? (
+          <>
+            {messages.map((message, index) => (
+              <ChatMessage key={index} message={message} />
+            ))}
+            {isLoading && <LoadingIndicator />}
+            {error && <ErrorMessage message={error} onRetry={handleRetry} />}
+          </>
+        ) : (
+          <div className="flex h-full items-center justify-center text-gray-400 text-sm">
+            Send a message to start the conversation
+          </div>
+        )}
+      </div>
+      
+      <div className="flex-none">
+        <ChatInput onSendMessage={onSendMessage} isDisabled={isLoading} />
+      </div>
+    </div>
+  );
+};
+
 export { ChatInput, ChatMessage, ChatWindow };

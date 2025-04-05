@@ -1,12 +1,18 @@
 import React, { createContext, useState, useContext } from 'react';
+import geminiService from '../services/geminiService.js';
 
 const AppContext = createContext({
   selectedModel: null,
   selectModel: () => {},
   messages: [],
   sendMessage: () => {},
-  totalTokens: 0,
+  isLoading: false,
   resetChat: () => {},
+  error: null,
+  clearError: () => {},
+  totalCalls: 0,
+  planType: null,
+  setPlanType: () => {},
 });
 
 export const AppProvider = ({ children }) => {

@@ -1,11 +1,19 @@
 import React from 'react';
-import { PageHeader } from '../components/UI';
-import { PricingGrid } from '../components/Pricing';
-import { useApp } from '../context/AppContext';
+import { PageHeader } from '../components/UI.jsx';
+import { PricingGrid } from '../components/Pricing.jsx';
+import { useApp } from '../context/AppContext.jsx';
 import { Zap } from 'lucide-react';
 
 const PricingPage = () => {
-  const { selectModel } = useApp();
+  const { selectModel, setPlanType } = useApp();
+
+  const handleModelSelect = (modelName) => {
+    selectModel(modelName);
+  };
+
+  const handlePlanSelect = (planType) => {
+    setPlanType(planType);
+  };
 
   return (
     <>
