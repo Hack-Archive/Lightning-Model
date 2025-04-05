@@ -1,16 +1,22 @@
 import React from 'react';
-import { PageHeader, ProgressBar } from '../components/UI';
-import { ChatWindow } from '../components/Chat';
-import { useApp } from '../context/AppContext';
+import { PageHeader, ProgressBar } from '../components/UI.jsx';
+import { ChatWindow } from '../components/Chat.jsx';
+import { useApp } from '../context/AppContext.jsx';
 
 const ChatPage = () => {
-  const { selectedModel, messages, sendMessage, totalTokens, resetChat } = useApp();
+  const { 
+    selectedModel, 
+    messages, 
+    sendMessage, 
+    resetChat, 
+    isLoading,
+    error,
+    totalCalls,
+    planType
+  } = useApp();
 
   const tokenLimit = 100000;
   const apiCallLimit = 1000;
-  const currentApiCalls = 47;
-
-  const isPayPerToken = selectedModel === 'Gemini 1.5 Flash';
 
   return (
     <div className="flex flex-col h-screen">
