@@ -23,3 +23,44 @@ export const AppProvider = ({ children }) => {
     setMessages([]);
     setTotalTokens(0);
   };
+
+  const sendMessage = (content) => {
+    if (!content.trim()) return;
+
+    const userTokens = Math.floor(content.length * 1.3);
+    const assistantTokens = Math.floor(userTokens * 1.5);
+
+    const newMessages = [
+      ...messages,
+      { role: 'user', content, tokens: userTokens },
+      { 
+        role: 'assistant', 
+        content: `This is a simulated response from ${selectedModel}. In a real implementation, this would be the actual response from the API.`,
+        tokens: assistantTokens
+      }
+    ];
+
+    setMessages(newMessages);
+    setTotalTokens(prev => prev + userTokens + assistantTokens);
+  };
+
+  const value = {
+    selectedModel,
+    selectModel,
+    messages,
+    sendMessage,
+    totalTokens,
+    resetChat,
+  };
+
+  return (
+    <AppContext.Provider value={value}>
+      {children}
+    </AppContext.Provider>
+  );
+};
+
+// Custom hook for using app context
+export const useApp = () => useContext(AppContext);
+
+export default AppContext;  
