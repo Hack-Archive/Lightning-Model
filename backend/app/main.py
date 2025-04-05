@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 Base.metadata.create_all(bind=engine)
-
+2
 add_total_token_limit_column()
 
 app = FastAPI(title=settings.APP_NAME)
