@@ -1,0 +1,38 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar for better visibility in light mode */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.05);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Yellow animation for the ProgressBar */
+@keyframes pulse-yellow {
+  0%, 100% {
+    background-color: rgba(250, 204, 21, 0.7); /* yellow-400 with opacity */
+  }
+  50% {
+    background-color: rgba(250, 204, 21, 0.9); /* yellow-400 with higher opacity */
+  }
+}
+
+.pulse-animation {
+  animation: pulse-yellow 2s infinite ease-in-out;
+}
