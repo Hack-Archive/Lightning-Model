@@ -34,7 +34,10 @@ const PricingPage = () => {
         </p>
       </div>
       
-      <PricingGrid onModelSelect={selectModel} />
+      <PricingGrid 
+        onModelSelect={handleModelSelect} 
+        onPlanSelect={handlePlanSelect}
+      />
     </>
   );
 };
