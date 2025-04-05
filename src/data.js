@@ -1,7 +1,7 @@
 import { Coins, Zap } from 'lucide-react';
 
 export const llmModels = [
-  { name: 'Gemini 1.5 Flash', description: 'Most capable model' },
+  { name: 'Gemini 1.5 Flash', description: 'Google\'s most capable model' },
 ];
 
 export const pricingPlans = [
@@ -16,6 +16,7 @@ export const pricingPlans = [
       'Volume discounts available'
     ],
     icon: Coins,
+    type: 'token',
   },
   {
     name: 'Pay Per Request',
@@ -28,5 +29,6 @@ export const pricingPlans = [
       'Bulk pricing available'
     ],
     icon: Zap,
+    type: 'request',
   },
 ];
