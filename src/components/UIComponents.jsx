@@ -69,3 +69,79 @@ export const PageHeader = ({
     </div>
   );
  
+  export const RateLimitAlert = ({ rateLimitInfo }) => {
+    const [timeRemaining, setTimeRemaining] = useState(rateLimitInfo.retryAfter);
+    
+    useEffect(() => {
+      let timer;
+      
+      if (timeRemaining > 0) {
+        timer = setInterval(() => {
+          setTimeRemaining(prev => {
+            if (prev <= 1) {
+              clearInterval(timer);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
+      
+      return () => {
+        if (timer) clearInterval(timer);
+      };
+    }, [rateLimitInfo, timeRemaining]);
+  
+    const formatTime = (seconds) => {
+      if (seconds <= 0) return 'Try again now';
+      
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      
+      if (mins > 0) {
+        return `${mins}m ${secs}s remaining`;
+      }
+      return `${secs}s remaining`;
+    };
+    
+    return (
+      <div className="mb-4 p-3 bg-yellow-50 border border-yellow-300 rounded-lg flex items-center text-yellow-800">
+        <AlertCircle className="w-5 h-5 mr-2 text-yellow-600 flex-shrink-0" />
+        <div className="flex-1">
+          <p className="font-medium">{rateLimitInfo.message}</p>
+          {timeRemaining > 0 && (
+            <div className="flex items-center mt-1 text-sm">
+              <Clock className="w-4 h-4 mr-1 text-yellow-600" />
+              <span>{formatTime(timeRemaining)}</span>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+  
+  export const RequestLimitConfig = ({ onSubmit, onBack }) => {
+    const [requestLimit, setRequestLimit] = useState(100);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState(null);
+  
+    const presetLimits = [50, 100, 500, 1000];
+  
+    const handleSubmit = async () => {
+      if (requestLimit <= 0) {
+        setError('Request limit must be greater than 0');
+        return;
+      }
+  
+      setIsSubmitting(true);
+      setError(null);
+  
+      try {
+        await onSubmit(requestLimit);
+      } catch (err) {
+        setError('Failed to set request limit. Please try again.');
+        console.error('Error setting request limit:', err);
+      } finally {
+        setIsSubmitting(false);
+      }
+    };  
