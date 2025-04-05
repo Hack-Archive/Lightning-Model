@@ -36,3 +36,22 @@ export const RequestLimitConfig = ({ onSubmit, onBack }) => {
       setIsSubmitting(false);
     }
   };
+
+  const handlePaymentSuccess = async () => {
+    try {
+      await onSubmit(requestLimit);
+
+      setTimeout(() => {
+        setShowPaymentModal(false);
+        resetPayment();
+      }, 2000);
+    } catch (err) {
+      setError('Payment was received but failed to create session. Please contact support.');
+      console.error('Error after payment:', err);
+    }
+  };
+  
+  const handleClosePaymentModal = () => {
+    setShowPaymentModal(false);
+    resetPayment();
+  };  

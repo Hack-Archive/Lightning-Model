@@ -78,3 +78,33 @@ export const ChatInput = ({ onSendMessage, isDisabled = false }) => {
       handleSubmit();
     }
   };
+
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        onKeyPress={handleKeyPress}
+        placeholder="Type your message..."
+        disabled={isDisabled}
+        className={`w-full px-4 py-3 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-colors border border-gray-300 text-gray-800 shadow-sm ${
+          isDisabled ? 'opacity-70 cursor-not-allowed' : ''
+        }`}
+      />
+      
+      <button
+        onClick={handleSubmit}
+        disabled={isDisabled || !input.trim()}
+        className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 transition-colors rounded-full ${
+          isDisabled || !input.trim()
+            ? 'bg-gray-300 cursor-not-allowed'
+            : 'hover:bg-yellow-500 bg-yellow-400'
+        }`}
+      >
+        <Send className="w-4 h-4 text-gray-800" />
+      </button>
+    </div>
+  );
+};
+

@@ -103,11 +103,6 @@ const PlanCard = ({ plan, onModelSelect, onPlanSelect }) => {
   );
 };
 
-/**
- * @param {Object} props
- * @param {(modelName: string) => void} props.onModelSelect
- * @param {(planType: string) => void} props.onPlanSelect
- */
 const PricingGrid = ({ onModelSelect, onPlanSelect }) => {
   return (
     <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto px-4">
