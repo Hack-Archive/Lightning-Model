@@ -29,20 +29,22 @@ const ChatPage = () => {
       </div>
 
       <div className="flex-none">
-        {isPayPerToken ? (
+        {planType === 'token' && (
           <div className="mb-4">
             <ProgressBar
               label="Token Usage"
-              current={totalTokens}
+              current={estimateTokenUsage()}
               max={tokenLimit}
               unit="tokens"
             />
           </div>
-        ) : (
+        )}
+        
+        {planType === 'request' && (
           <div className="mb-4">
             <ProgressBar
               label="API Calls"
-              current={currentApiCalls}
+              current={totalCalls}
               max={apiCallLimit}
               unit="calls"
             />
@@ -53,7 +55,9 @@ const ChatPage = () => {
       <div className="flex-1 min-h-0 overflow-hidden">
         <ChatWindow 
           messages={messages} 
-          onSendMessage={sendMessage} 
+          onSendMessage={sendMessage}
+          isLoading={isLoading}
+          error={error} 
         />
       </div>
     </div>
