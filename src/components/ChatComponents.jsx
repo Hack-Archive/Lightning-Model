@@ -147,3 +147,73 @@ export const ChatMessage = ({ message }) => {
     </div>
   );
 };
+
+const LoadingIndicator = () => (
+  <div className="flex items-start space-x-2 animate-pulse">
+    <Bot className="w-6 h-6 p-1 flex-shrink-0 text-gray-700 bg-yellow-100 rounded-full border border-yellow-300" />
+    
+    <div className="flex flex-col max-w-[70%]">
+      <div className="rounded-lg py-2 px-3 border bg-gray-100 border-gray-200">
+        <Loader2 className="w-5 h-5 text-gray-500 animate-spin" />
+      </div>
+    </div>
+  </div>
+);
+
+const ErrorMessage = ({ message, onRetry }) => (
+  <div className="flex items-start space-x-2">
+    <Bot className="w-6 h-6 p-1 flex-shrink-0 text-red-700 bg-red-100 rounded-full border border-red-300" />
+    
+    <div className="flex flex-col max-w-[70%]">
+      <div className="rounded-lg py-2 px-3 border bg-red-50 border-red-200 text-red-700">
+        <p>{message}</p>
+        <button 
+          onClick={onRetry}
+          className="mt-2 text-sm bg-red-100 hover:bg-red-200 text-red-800 py-1 px-2 rounded transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+export const ChatWindow = ({ 
+  messages, 
+  onSendMessage, 
+  isLoading = false,
+  error = null 
+}) => {
+  const handleRetry = () => {
+    if (messages.length > 0) {
+      const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+      if (lastUserMessage) {
+        onSendMessage(lastUserMessage.content);
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full rounded-lg border border-gray-300 bg-white/80 p-4 shadow-lg">
+      <div className="flex-1 overflow-auto space-y-3 mb-3 pr-2 custom-scrollbar">
+        {messages.length > 0 ? (
+          <>
+            {messages.map((message, index) => (
+              <ChatMessage key={index} message={message} />
+            ))}
+            {isLoading && <LoadingIndicator />}
+            {error && <ErrorMessage message={error} onRetry={handleRetry} />}
+          </>
+        ) : (
+          <div className="flex h-full items-center justify-center text-gray-400 text-sm">
+            Send a message to start the conversation
+          </div>
+        )}
+      </div>
+      
+      <div className="flex-none">
+        <ChatInput onSendMessage={onSendMessage} isDisabled={isLoading} />
+      </div>
+    </div>
+  );
+};

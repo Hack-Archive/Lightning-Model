@@ -86,12 +86,15 @@ const PlanCard = ({ plan, onModelSelect, onPlanSelect }) => {
       </div>
 
       <div className="absolute bottom-8 left-8 right-8">
+        {/* Model dropdown for display only */}
         <div className="w-full px-4 py-3 rounded-lg bg-gray-100 mb-4 flex items-center justify-between border border-gray-200">
           <div className="flex flex-col items-start">
             <span className="font-medium text-gray-800">Gemini 1.5 Flash</span>
             <span className="text-sm text-gray-600">Most capable model</span>
           </div>
         </div>
+        
+        {/* Get Started button now directly selects Gemini 1.5 Flash */}
         <button 
           onClick={handleGetStarted}
           className="w-full px-6 py-3 rounded-lg bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition-colors font-medium"
