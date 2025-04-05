@@ -1,19 +1,20 @@
-import React, { createContext, useState, useContext } from 'react';
-import geminiService from '../services/geminiService.js';
+import React, { useState, useEffect } from 'react';
+import { ArrowLeft, Bot, Clock, AlertCircle, Database, Zap } from 'lucide-react';
 
-const AppContext = createContext({
-  selectedModel: null,
-  selectModel: () => {},
-  messages: [],
-  sendMessage: () => {},
-  isLoading: false,
-  resetChat: () => {},
-  error: null,
-  clearError: () => {},
-  totalCalls: 0,
-  planType: null,
-  setPlanType: () => {},
-});
+export const Background = ({ children }) => {
+  return (
+    <div className="min-h-screen bg-[#F5F5F5] text-gray-800 relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-yellow-300/20 blur-3xl"></div>
+        <div className="absolute top-1/3 -left-24 w-72 h-72 rounded-full bg-yellow-400/20 blur-3xl"></div>
+      </div>
+      
+      <div className="relative z-10 container mx-auto px-4 py-4 h-screen flex flex-col">
+        {children}
+      </div>
+    </div>
+  );
+};
 
 /**
  * @param {Object} props

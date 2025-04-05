@@ -62,4 +62,19 @@ const ChatMarkdown = ({ content }) => {
   );
 };
 
-export default ChatMarkdown;
+export const ChatInput = ({ onSendMessage, isDisabled = false }) => {
+  const [input, setInput] = useState('');
+
+  const handleSubmit = () => {
+    if (!input.trim() || isDisabled) return;
+    
+    onSendMessage(input);
+    setInput('');
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };

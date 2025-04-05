@@ -1,9 +1,13 @@
 import React from 'react';
-import { PageHeader, ProgressBar } from '../components/UI.jsx';
-import { ChatWindow } from '../components/Chat.jsx';
-import { useApp } from '../context/AppContext.jsx';
+import { PageHeader, ProgressBar, RateLimitAlert } from '../components/UIComponents.jsx';
+import { ChatWindow } from '../components/ChatComponents.jsx';
+import { PricingGrid } from '../components/PricingComponents.jsx';
+import { TokenLimitConfig } from '../components/TokenLimitConfig.jsx';
+import { RequestLimitConfig } from '../components/RequestLimitConfig.jsx';
+import { useApp } from '../App.jsx';
+import { AlertCircle, Zap, Coins } from 'lucide-react';
 
-const ChatPage = () => {
+export const ChatPage = () => {
   const { 
     selectedModel, 
     messages, 
@@ -11,12 +15,14 @@ const ChatPage = () => {
     resetChat, 
     isLoading,
     error,
-    totalCalls,
-    planType
+    planType,
+    requestsRemaining,
+    tokensRemaining,
+    sessionStatus,
+    rateLimitInfo
   } = useApp();
 
-  const tokenLimit = 100000;
-  const apiCallLimit = 1000;
+  const isSessionTerminated = sessionStatus && !sessionStatus.is_active;
 
   return (
     <div className="flex flex-col h-screen">
