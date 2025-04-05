@@ -1,9 +1,7 @@
-/* src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom scrollbar for better visibility in light mode */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
@@ -23,13 +21,12 @@
   background: rgba(0, 0, 0, 0.2);
 }
 
-/* Yellow animation for the ProgressBar */
 @keyframes pulse-yellow {
   0%, 100% {
-    background-color: rgba(250, 204, 21, 0.7); /* yellow-400 with opacity */
+    background-color: rgba(250, 204, 21, 0.7); 
   }
   50% {
-    background-color: rgba(250, 204, 21, 0.9); /* yellow-400 with higher opacity */
+    background-color: rgba(250, 204, 21, 0.9); 
   }
 }
 
