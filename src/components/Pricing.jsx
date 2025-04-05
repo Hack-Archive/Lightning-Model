@@ -1,11 +1,7 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { llmModels, pricingPlans } from '../data.js';
+import { llmModels, pricingPlans } from '../common.js';
 
-/**
- * @param {Object} props
- * @param {(modelName: string) => void} props.onSelect
- */
 const ModelSelector = ({ onSelect }) => {
   const model = llmModels[0];
   
@@ -26,12 +22,6 @@ const ModelSelector = ({ onSelect }) => {
   );
 };
 
-/**
- * @param {Object} props
- * @param {Object} props.plan
- * @param {(modelName: string) => void} props.onModelSelect
- * @param {(planType: string) => void} props.onPlanSelect
- */
 const PlanCard = ({ plan, onModelSelect, onPlanSelect }) => {
   const { name, price, unit, features, icon: Icon, type } = plan;
 

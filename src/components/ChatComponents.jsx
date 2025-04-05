@@ -20,22 +20,17 @@ SyntaxHighlighter.registerLanguage('bash', bash);
 SyntaxHighlighter.registerLanguage('css', css);
 SyntaxHighlighter.registerLanguage('html', html);
 
-/**
- * @param {Object} props
- * @param {string} props.content
- */
 const ChatMarkdown = ({ content }) => {
   const components = {
     code({ className, children, ...props }) {
       const match = /language-(\w+)/.exec(className || '');
       const lang = match ? match[1] : '';
       const codeContent = String(children).replace(/\n$/, '');
-
       const isInline = !className || !match;
       
       if (isInline) {
         return (
-          <code className={className} {...props}> 
+          <code className={className} {...props}>
             {children}
           </code>
         );
