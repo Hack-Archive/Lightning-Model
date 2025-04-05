@@ -1,9 +1,11 @@
-export const estimateTokenCount = (text) => {
-    if (!text) return 0;
-    return Math.ceil(text.length / 4);
-  };
-  
-  export const estimateResponseTokens = (promptTokens) => {
-    const multiplier = 1.2 + Math.random() * 0.6;
-    return Math.floor(promptTokens * multiplier);
-  };
+export const formatBtc = (btc, decimals = 8) => {
+  return `₿${btc.toFixed(decimals)}`;
+};
+
+export const formatSats = (sats) => {
+  return `${sats.toLocaleString()} sats`;
+};
+
+export const tokensToBtc = (tokens, ratePerToken = 0.0000001) => {
+  return tokens * ratePerToken;
+};

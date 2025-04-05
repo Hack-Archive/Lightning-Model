@@ -1,7 +1,7 @@
 import React from 'react';
-import { Background } from './components/UI';
-import { PricingPage, ChatPage } from './pages';
-import { AppProvider, useApp } from './context/AppContext';
+import { Background } from './components/UI.jsx';
+import { PricingPage, ChatPage } from './pages/index.js';
+import { AppProvider, useApp } from './context/AppContext.jsx';
 
 const AppContent = () => {
   const { selectedModel } = useApp();
