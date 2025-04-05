@@ -1,7 +1,11 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { llmModels, pricingPlans } from '../data';
+import { llmModels, pricingPlans } from '../data.js';
 
+/**
+ * @param {Object} props
+ * @param {(modelName: string) => void} props.onSelect
+ */
 const ModelSelector = ({ onSelect }) => {
   const model = llmModels[0];
   
@@ -22,8 +26,14 @@ const ModelSelector = ({ onSelect }) => {
   );
 };
 
-const PlanCard = ({ plan, onModelSelect }) => {
-  const { name, price, unit, features, icon: Icon } = plan;
+/**
+ * @param {Object} props
+ * @param {Object} props.plan
+ * @param {(modelName: string) => void} props.onModelSelect
+ * @param {(planType: string) => void} props.onPlanSelect
+ */
+const PlanCard = ({ plan, onModelSelect, onPlanSelect }) => {
+  const { name, price, unit, features, icon: Icon, type } = plan;
 
   const getPlanFeatures = () => {
     if (name === 'Pay Per Token') {
@@ -47,6 +57,7 @@ const PlanCard = ({ plan, onModelSelect }) => {
   const handleGetStarted = () => {
     const defaultModel = llmModels[0].name;
     onModelSelect(defaultModel);
+    onPlanSelect(type);
   };
   
   const displayFeatures = getPlanFeatures();
@@ -91,7 +102,6 @@ const PlanCard = ({ plan, onModelSelect }) => {
             <span className="text-sm text-gray-600">Most capable model</span>
           </div>
         </div>
-        
         <button 
           onClick={handleGetStarted}
           className="w-full px-6 py-3 rounded-lg bg-yellow-400 text-gray-800 hover:bg-yellow-500 transition-colors font-medium"
@@ -103,7 +113,12 @@ const PlanCard = ({ plan, onModelSelect }) => {
   );
 };
 
-const PricingGrid = ({ onModelSelect }) => {
+/**
+ * @param {Object} props
+ * @param {(modelName: string) => void} props.onModelSelect
+ * @param {(planType: string) => void} props.onPlanSelect
+ */
+const PricingGrid = ({ onModelSelect, onPlanSelect }) => {
   return (
     <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto px-4">
       {pricingPlans.map((plan) => (
@@ -111,6 +126,7 @@ const PricingGrid = ({ onModelSelect }) => {
           key={plan.name}
           plan={plan}
           onModelSelect={onModelSelect}
+          onPlanSelect={onPlanSelect}
         />
       ))}
     </div>
