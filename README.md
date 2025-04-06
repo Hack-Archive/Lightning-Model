@@ -105,7 +105,7 @@ It includes metadata about token consumption:
 
 ### Token Bucket Algorithm Implementation
 
-The system implements a Redis-backed Token Bucket algorithm for metered API access control. Each session maintains a virtual token reservoir with configurable capacity and replenishment rate. The implementation tracks three key metrics: instantaneous token availability (for rate limiting), cumulative consumption (for quota enforcement), and time-based replenishment. When a request is processed, the algorithm atomically verifies sufficient token availability, deducts the appropriate amount, and records usage metrics using Redis pipelines for transactional consistency. Token replenishment follows a continuous time-based function calculated as (elapsed_time * replenishment_rate), constrained by maximum capacity.
+The system implements a Redis-backed Token Bucket algorithm for metered API access control. Each session maintains a virtual token reservoir with configurable capacity and replenishment rate. The implementation tracks three key metrics: instantaneous token availability (for rate limiting), cumulative consumption (for quota enforcement), and time-based replenishment. When a request is processed, the algorithm automatically verifies sufficient token availability, deducts the appropriate amount, and records usage metrics using Redis pipelines for transactional consistency. Token replenishment follows a continuous time-based function calculated as (elapsed_time * replenishment_rate), constrained by maximum capacity.
 
 # FlowChart
 
