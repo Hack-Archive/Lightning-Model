@@ -42,12 +42,13 @@ REDIS_PORT=6379
 ```
 
 ### Keys for interacting with voltage.cloud:
-#### Go to src/services/lndService.js and at top of file:
+#### Go to src/services/lndService.js and at top of the file:
 ```
 const REST_HOST = 'yournodename.t.voltageapp.io:8080';      #Paste your API enpoint of your TestnetNode of Lightning Node
 const MACAROON = 'HEX_KEY_HERE';       #Visit Macaroon Bakery and Paste Hex key here(Admin)
 
 ```
+We have used Testnet while setting up Voltage Node.
 
 ### Setting up
 ```
@@ -76,6 +77,17 @@ source ./venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
+### Development Mode
+#### To enable Lightning Payment
+Visit src/services/lndService.js and at top of the file:
+```
+// Set to true for development mode with mock invoices
+const DEV_MODE = true;
+
+```
+Make it:
+`const DEV_MODE = false;`
+
 # Working
 ### We have used usage_metadata is used in the chat message endpoint to track token usage from the Gemini API.
 ```
@@ -110,5 +122,12 @@ The system implements a Redis-backed Token Bucket algorithm for metered API acce
 # FlowChart
 
 ![Untitled-2025-04-05-2019](https://github.com/user-attachments/assets/3755f241-3826-4f7e-9feb-b5bb2ba3c439)
+
+# Resources
+[Gemini API Docs](https://ai.google.dev/gemini-api/docs)
+
+[Voltage Docs](https://docs.voltage.cloud/)
+
+[Lightning](https://docs.lightning.engineering/)
 
 
